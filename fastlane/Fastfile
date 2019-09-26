@@ -1,0 +1,43 @@
+
+default_platform(:ios)
+
+platform :ios do
+
+  desc "Push a new beta build to Firebase App Distribution"
+  lane :app_distribution do
+    import_certificates_for_actions if is_ci
+    sync_code_signing(
+      git_url: "git@github.com:kouki-dan/certificates.git",
+      type: "adhoc",
+      readonly: true
+    ) unless is_ci
+    build_app(
+      scheme: "ActionsAndAppDistributionTest",
+      export_options: {
+        method: "ad-hoc"
+      }
+    )
+    firebase_app_distribution(
+      app: "1:595091170546:ios:29fc33f9349780038c9c6b",
+      groups: "all",
+      release_notes: "Lots of amazing new features to test out!",
+      firebase_cli_path: `which firebase`.strip()
+    )
+  end
+
+  desc "Import Certificates for GitHub Actions"
+  private_lane :import_certificates_for_actions do
+    setup_ci(
+      force: true,
+      provider: "travis",
+    )
+
+    sync_code_signing(
+      git_url: "https://github.com/kouki-dan/certificates.git",
+      git_basic_authorization: ENV["PERSONAL_ACCESS_TOKEN_GITHUB"],
+      type: "adhoc",
+      readonly: true
+    )
+  end
+end
+

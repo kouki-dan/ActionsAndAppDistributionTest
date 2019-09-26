@@ -1,0 +1,8 @@
+app_identifier("com.koukilab.ActionsAndAppDistributionTest") # The bundle identifier of your app
+apple_id("dan.addr.skd@gmail.com") # Your Apple email address
+
+itc_team_id("10666364") # App Store Connect Team ID
+team_id("HSPXR438P9") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
