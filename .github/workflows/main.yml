@@ -1,0 +1,29 @@
+name: Deploy to App Distribution
+
+on: [repository_dispatch]
+
+jobs:
+  build:
+
+    runs-on: macOS-10.14
+    timeout-minutes: 20
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Deploy to Firebase App Distribution
+      if: github.event.action == 'deploy'
+      env:
+        CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }} # In case of using manual certificates import
+        PERSONAL_ACCESS_TOKEN_GITHUB: ${{ secrets.PERSONAL_ACCESS_TOKEN_GITHUB }} # In case of using match
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }} # In case of using match
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      run: |
+        npm install -g firebase-tools
+
+        sudo xcode-select -s /Applications/Xcode_11.app
+        bundle install
+        bundle exec fastlane app_distribution
+
